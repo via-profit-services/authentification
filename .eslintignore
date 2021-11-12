@@ -1,0 +1,4 @@
+/dist/**
+/build/**
+/.yarn
+/.pnp.js

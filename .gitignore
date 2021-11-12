@@ -1,0 +1,39 @@
+/node_modules/
+/.env
+/log
+/misc
+/sandbox.js
+/sessions
+
+20210120105405_phones-setup.js
+20200509030327_file-storage-setup.js
+20200723164537_file-storage-alter-filetype.js
+/public
+
+# jest
+/coverage
+
+# webpack temporary dir
+/build
+
+/dist
+
+# jwt keys
+/keys
+
+# Redis sump
+/dump.rdb
+
+/sessions
+/package.tgz
+/package-*.tgz
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/versions
+
+/public
+/.env
+/.knex/.env
+/.knex/knexfile.js
