@@ -1043,9 +1043,9 @@ __metadata:
     "@types/webpack-node-externals": ^2.5.0
     "@typescript-eslint/eslint-plugin": ^5.3.0
     "@typescript-eslint/parser": ^5.3.0
-    "@via-profit-services/core": "file://home/dhs/Projects/@via-profit-services/core/package-2.0.0-rc.13.tgz"
+    "@via-profit-services/core": ^2.0.0
     "@via-profit-services/eslint-config": ^0.1.18
-    "@via-profit-services/redis": "file://home/dhs/Projects/@via-profit-services/redis/package-2.0.0-rc.2.tgz"
+    "@via-profit-services/redis": ^2.0.0
     bcryptjs: ^2.4.3
     cross-env: ^6.0.3
     eslint: 7.32.0
@@ -1091,9 +1091,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.0.0-rc.13.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A.":
-  version: 2.0.0-rc.13
-  resolution: "@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.0.0-rc.13.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A."
+"@via-profit-services/core@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@via-profit-services/core@npm:2.0.0"
   dependencies:
     bufferutil: ^4.0.2
     raw-body: ^2.4.1
@@ -1106,7 +1106,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: f1c50f2c9ec4f0fd503369470471e4a6a4bfed3a3f891eb44e2b9f243ac07c0e567a9125c4bec36cd610f21bde1f97650f18a3148da2f94ff899b43b4a071747
+  checksum: a564f56f664e0026a8ee308800451e6a8fbd0ed4549cded072f957e65cf24b7502f1a378d02b1853ce1fa3d9439195e6e231968bff4227cff491dbf114bb2f69
   languageName: node
   linkType: hard
 
@@ -1136,13 +1136,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@via-profit-services/redis@file://home/dhs/Projects/@via-profit-services/redis/package-2.0.0-rc.2.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A.":
-  version: 2.0.0-rc.2
-  resolution: "@via-profit-services/redis@file://home/dhs/Projects/@via-profit-services/redis/package-2.0.0-rc.2.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A."
+"@via-profit-services/redis@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@via-profit-services/redis@npm:2.0.0"
   peerDependencies:
     "@via-profit-services/core": ^2.0.0
     ioredis: ^4.27.2
-  checksum: 3b11482541aaa007cb11a777d9dbec9a43aae9aeb8608652283947a7dfb3386cb4749669f832a38309b3d4baaa2beb194b6b3ca7ca2d4ab42ef6d6b56444fb6a
+  checksum: 99a8e9fd2bdd7eedc1d19a43f7de0c31d769128a5fba2b9f79dddf55ac79036e9e164a24fc68edcf5ebd860ee05897cd88dec3dd957f07a2675c4f8a44ac95b0
   languageName: node
   linkType: hard
 

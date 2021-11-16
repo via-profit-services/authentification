@@ -102,7 +102,7 @@ declare module '@via-profit-services/authentification' {
      * Unix time that determines the moment when the Refresh Token becomes invalid\
      * (the refresh token lifetime in seconds)\
      * \
-     * Default: `2.592e6`
+     * Default: `2.592e6` (30 days)
      */
     refreshTokenExpiresIn?: number;
   }
@@ -117,11 +117,6 @@ declare module '@via-profit-services/authentification' {
     tokenPayload: RefreshTokenPayload;
     context: Context;
   }) => MaybePromise<TokenRegistrationResponse>;
-
-  // export type RevokeTokenFn = (props: {
-  //   tokenPayload: AccessTokenPayload;
-  //   context: Context;
-  // }) => MaybePromise<void>;
 
   export type CheckTokenRevokeFn = (props: {
     tokenPayload: AccessTokenPayload | RefreshTokenPayload;

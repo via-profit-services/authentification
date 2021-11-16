@@ -87,7 +87,6 @@ type RefreshTokenPayload {
   roles: [AccountRole!]!
   exp: Int!
   iss: String!
-  associated: AccessToken!
 }
 
 enum TokenType {

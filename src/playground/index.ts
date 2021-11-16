@@ -1,13 +1,16 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { factory, resolvers, typeDefs, Context } from '@via-profit-services/core';
+import { factory, resolvers, typeDefs } from '@via-profit-services/core';
 import * as redis from '@via-profit-services/redis';
 import express from 'express';
 import http from 'http';
 import path from 'path';
 import bcryptjs from 'bcryptjs';
 
+import customTypes from './customTypes';
+import customResolvers from './customResolvers';
 import { factory as authFactory } from '../index';
-import { AccessTokenPayload } from '@via-profit-services/authentification';
+import graphiql from './graphiql';
+import accounts from './accounts';
 
 (async () => {
   const app = express();
@@ -21,44 +24,6 @@ import { AccessTokenPayload } from '@via-profit-services/authentification';
   };
 
   const redisMiddleware = redis.factory(redisConfig);
-
-  const accounts = [
-    {
-      id: '3e905cf1-58be-47e2-8ce3-54b36d0e91ad',
-      name: 'Raphael',
-      roles: ['viewer'],
-      login: 'raphael',
-      password: '$2a$10$4Znmu.IfH.c2Cv/ErQAtEuVi01yzqDEGzcS9qaSOjJG2U9udImIeu', // raphael
-    },
-    {
-      id: '62af975d-a696-4749-917f-4b85d0d47c11',
-      name: 'Leonardo',
-      roles: ['administrator'],
-      login: 'leonardo',
-      password: '$2a$10$4Znmu.IfH.c2Cv/ErQAtEuhWETYN/ravOGmQBzUVYVYe0iniS/we2', // leonardo
-    },
-    {
-      id: 'fe93babe-3f17-4866-b997-4e7412d78a18',
-      name: 'Donatello',
-      roles: ['viewer'],
-      login: 'donatello',
-      password: '$2a$10$4Znmu.IfH.c2Cv/ErQAtEun8AXUHu6q5wK0QPJfnnpi/M68tq1dV2', // donatello
-    },
-    {
-      id: '34228712-3752-4dad-bada-4c2536ca8384',
-      name: 'Michelangelo',
-      roles: ['viewer'],
-      login: 'michelangelo',
-      password: '$2a$10$4Znmu.IfH.c2Cv/ErQAtEuOMPSThRtqFv3RnvjauoZV/EzXo2MuPu', // michelangelo
-    },
-    {
-      id: 'ec3e6213-45f8-4187-b42e-6f265a4c22ae',
-      name: 'Shredder',
-      roles: ['enemy', 'viewer'],
-      login: 'shredder',
-      password: '$2a$10$4Znmu.IfH.c2Cv/ErQAtEur3qV197mxjL0zuiLtfO3DVIbctq9phu', // shredder
-    },
-  ];
 
   const authentification = await authFactory({
     privateKey: path.resolve(__dirname, './jwtRS256.key'),
@@ -140,70 +105,6 @@ import { AccessTokenPayload } from '@via-profit-services/authentification';
     },
   });
 
-  const customTypes = `
-    extend type Query {
-      propper: Propper!
-    }
-
-    extend type Mutation {
-      revokeToken(userID: String!): Void
-    }
-
-    type Propper {
-      id: ID!
-      name: String!
-      token: String!
-    }
-  `;
-
-  const customResolvers = {
-    Query: {
-      propper: () => ({}),
-    },
-    Mutation: {
-      revokeToken: async (
-        _parent: any,
-        args: { userID: string },
-        context: Context,
-      ): Promise<void> => {
-        const { userID } = args;
-        const { redis } = context;
-
-        const tokens = await redis.hgetall('tokens');
-        Object.entries(tokens).forEach(([_tokenID, payloadStr]) => {
-          const { uuid, id } = JSON.parse(payloadStr) as AccessTokenPayload;
-          if (uuid === userID) {
-            redis.hdel('tokens', id);
-            redis.hset('blacklist', id, payloadStr);
-          }
-        });
-
-        // remove expired records
-        const blacklist = await redis.hgetall('blacklist');
-        Object.entries(blacklist).forEach(([tokenID, payloadStr]) => {
-          const { exp } = JSON.parse(payloadStr) as { exp: number };
-          if (exp < Date.now() / 1000) {
-            redis.hdel('blacklist', tokenID);
-          }
-        });
-      },
-    },
-    Propper: {
-      id: () => 'propperID',
-      name: (_parent: any, _args: any, context: Context) => {
-        const { token } = context;
-        console.log('Propper Name token', token.id);
-
-        return 'Propper Name';
-      },
-      token: (_parent: any, _args: any, context: Context) => {
-        const { token } = context;
-
-        return `Token is «${token.id}»`;
-      },
-    },
-  };
-
   const schema = makeExecutableSchema({
     typeDefs: [
       typeDefs,
@@ -226,6 +127,74 @@ import { AccessTokenPayload } from '@via-profit-services/authentification';
   });
 
   app.use('/graphql', graphQLExpress); // <-- Last
+  app.use(
+    '/',
+    graphiql({
+      variables: {
+        login: 'donatello',
+        password: 'donatello',
+      },
+      query: `
+# Make access token mutation
+mutation CreateTokenMutation($login: String!, $password: String!) {
+  authentification {
+    create(login: $login, password: $password) {
+      ...AuthFailedFragment
+      ...AuthSuccessFragment
+    }
+  }
+}
+
+# This request will fail with an error
+# because no access token is provided
+query GetMyDataWithoutToken {
+  me {
+    id
+    name
+  }
+}
+
+fragment AuthFailedFragment on TokenRegistrationError {
+  name
+  msg
+}
+
+fragment AuthSuccessFragment on TokenRegistrationSuccess {
+  query {
+    # This resolver will be executed without errors,
+    # since the token will be present in the context
+    me {
+      id
+      name
+    }
+  }
+  payload {
+    accessToken {
+      token
+      payload {
+        type
+        id
+        uuid
+        exp
+        roles
+        iss
+      }
+    }
+    refreshToken {
+      token
+      payload {
+        type
+        id
+        uuid
+        exp
+        roles
+        iss
+      }
+    }
+  }
+}`,
+    }),
+  ); // <-- Last
 
   server.listen(9000, () => {
     console.log(`GraphQL Server started at http://localhost:9000/graphql`);
