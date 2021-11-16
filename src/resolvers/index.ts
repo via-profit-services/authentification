@@ -1,4 +1,3 @@
-import { fieldBuilder } from '@via-profit-services/core';
 import type { Resolvers } from '@via-profit-services/authentification';
 
 import AuthentificationMutation from './AuthentificationMutation';
