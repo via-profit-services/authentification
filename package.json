@@ -20,7 +20,8 @@
     "start": "yarn build:dev --watch",
     "debug": "cross-env DEBUG=true yarn build:dev --watch",
     "analyze": "cross-env ANALYZE=true yarn build:dist",
-    "lint": "yarn eslint ./src/ --fix ."
+    "lint": "yarn eslint ./src/ --fix .",
+    "package": "yarn pack -o package-%v.tgz"
   },
   "repository": {
     "type": "git",
