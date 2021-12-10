@@ -74,7 +74,7 @@ class AuthentificationService implements AuthentificationServiceInterface {
     const accessExpires = exp?.access ?? accessTokenExpiresIn;
     const refreshExpires = exp?.refresh ?? refreshTokenExpiresIn;
 
-    const accessTokenPayload = {
+    const accessTokenPayload: AccessTokenPayload = {
       ...payload,
       type: 'access',
       id: uuidv4(),
@@ -82,13 +82,13 @@ class AuthentificationService implements AuthentificationServiceInterface {
       iss: issuer,
     };
 
-    const refreshTokenPayload = {
+    const refreshTokenPayload: RefreshTokenPayload = {
       ...payload,
       type: 'refresh',
       id: uuidv4(),
-      associated: accessTokenPayload.id,
       exp: Math.floor(Date.now() / 1000) + Number(refreshExpires),
       iss: issuer,
+      associated: accessTokenPayload,
     };
 
     const accessTokenString = jsonwebtoken.sign(accessTokenPayload, privateKey, { algorithm });
@@ -97,17 +97,11 @@ class AuthentificationService implements AuthentificationServiceInterface {
     return {
       accessToken: {
         token: accessTokenString,
-        payload: {
-          ...accessTokenPayload,
-          type: 'access',
-        },
+        payload: accessTokenPayload,
       },
       refreshToken: {
         token: refreshTokenString,
-        payload: {
-          ...refreshTokenPayload,
-          type: 'refresh',
-        },
+        payload: refreshTokenPayload,
       },
     };
   }

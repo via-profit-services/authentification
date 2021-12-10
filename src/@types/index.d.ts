@@ -16,40 +16,44 @@ declare module '@via-profit-services/authentification' {
 
     /**
      * This function is triggered every time an authorization attempt is made \
-     * You should return success or error response:
-     * ```ts
+     * You should return tokens pair or error message or false\
+     * \
+     * **Example**:
+     * ```js
+     * ...
+     * const account = await services.accounts.getAccount(login, password);
+     * // you can return error message string or false
+     * if (!account) {
+     *  return 'Invalid login or password';
+     * }
+     *
      * // for success response
-     * {
-     *   __typename: 'TokenRegistrationSuccess',
-     *   payload: TokenPackage,
-     *   query: {},
-     * }
-     * // ... or for error response
-     * {
-     *    __typename: 'TokenRegistrationError',
-     *    name: 'InvalidCredentials',
-     *    msg: 'Invalid login or password',
-     * }
+     * return services.authentification.generateTokens({
+     *   uuid: account.id,
+     *   roles: account.roles,
+     * });
      * ```
      */
     createTokenFn: CreateTokenFn;
 
     /**
      * This function is triggered every time a token refresh is attempted \
-     * You should return success or error response:
-     * ```ts
+     * You should return new tokens pair or error message or false\
+     * \
+     * **Example**:
+     * ```js
+     * ...
+     * const account = await services.accounts.getAccount(tokenPayload.uuid);
+     * // you can return error message string or false
+     * if (!account) {
+     *  return 'Account not found';
+     * }
+     *
      * // for success response
-     * {
-     *   __typename: 'TokenRegistrationSuccess',
-     *   payload: TokenPackage,
-     *   query: {},
-     * }
-     * // ... or for error response
-     * {
-     *    __typename: 'TokenRegistrationError',
-     *    name: 'InvalidCredentials',
-     *    msg: 'Invalid login or password',
-     * }
+     * return services.authentification.generateTokens({
+     *   uuid: account.id,
+     *   roles: account.roles,
+     * });
      * ```
      */
     refreshTokenFn: RefreshTokenFn;
@@ -58,12 +62,6 @@ declare module '@via-profit-services/authentification' {
      * This function is run at every request to check if the token is in the blacklist
      */
     checkTokenRevokeFn: CheckTokenRevokeFn;
-    /**
-     * Account roles.\
-     * The roles that will be passed here will be added
-     * to the type: `enum AccountRole`
-     */
-    roles: AccountRole[];
 
     /**
      * Signature algorithm. Could be one of these values :
@@ -102,6 +100,7 @@ declare module '@via-profit-services/authentification' {
      * Unix time that determines the moment when the Refresh Token becomes invalid\
      * (the refresh token lifetime in seconds)\
      * \
+     * Unit: `seconds`\
      * Default: `2.592e6` (30 days)
      */
     refreshTokenExpiresIn?: number;
@@ -111,12 +110,12 @@ declare module '@via-profit-services/authentification' {
     login: string;
     password: string;
     context: Context;
-  }) => MaybePromise<TokenRegistrationResponse>;
+  }) => MaybePromise<false | string | TokenPackage>;
 
   export type RefreshTokenFn = (props: {
     tokenPayload: RefreshTokenPayload;
     context: Context;
-  }) => MaybePromise<TokenRegistrationResponse>;
+  }) => MaybePromise<false | string | TokenPackage>;
 
   export type CheckTokenRevokeFn = (props: {
     tokenPayload: AccessTokenPayload | RefreshTokenPayload;
@@ -133,12 +132,8 @@ declare module '@via-profit-services/authentification' {
   }
 
   export type MiddlewareFactory = (config: Configuration) => Promise<{
-    resolvers: Resolvers;
-    typeDefs: string;
     middleware: Middleware;
   }>;
-
-  export type AccountRole = string;
 
   export type Resolvers = {
     Query: {
@@ -197,6 +192,22 @@ declare module '@via-profit-services/authentification' {
     | TokenRegistrationResponseSuccess
     | TokenRegistrationResponseFailure;
 
+  export type TokenVerificationResponse =
+    | TokenVerificationResponseSuccess
+    | TokenVerificationResponseFailure;
+
+  export type TokenVerificationResponseSuccess = {
+    __typename: 'TokenVerificationSuccess';
+    payload: AccessTokenPayload;
+    query: Record<string, any>;
+  };
+
+  export type TokenVerificationResponseFailure = {
+    name: string;
+    msg: string;
+    __typename: 'TokenVerificationError';
+  };
+
   export interface TokenPackage {
     accessToken: {
       token: string;
@@ -226,10 +237,16 @@ declare module '@via-profit-services/authentification' {
     /**
      * Account roles array
      */
-    roles: AccountRole[];
+    roles: string[];
 
     /**
-     * Unix time that determines the moment when the Token becomes invalid
+     * Unix time that determines the moment when the Token becomes invalid\
+     * Unit: `seconds`
+     * ```js
+     * // Check that the token has expired:
+     * const isExpired = new Date().getTime() / 1000 > token.exp;
+     * ```
+     *
      */
     exp: number;
 
@@ -246,9 +263,9 @@ declare module '@via-profit-services/authentification' {
     type: 'refresh';
 
     /**
-     * Access token ID associated value
+     * Associated Access token info
      */
-    associated: string;
+    associated: AccessTokenPayload;
   };
 
   export interface AccessToken {
@@ -269,7 +286,7 @@ declare module '@via-profit-services/authentification' {
 
   export interface GenerateTokenPayload {
     uuid: string;
-    roles: AccountRole[];
+    roles: string[];
   }
 
   /**

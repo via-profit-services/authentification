@@ -8,10 +8,6 @@ const webpackBaseConfig: Configuration = {
         test: /\.ts$/,
         use: 'ts-loader',
       },
-      {
-        test: /\.graphql$/,
-        use: 'raw-loader',
-      },
     ],
   },
   node: {
@@ -19,7 +15,7 @@ const webpackBaseConfig: Configuration = {
     __dirname: true,
   },
   resolve: {
-    extensions: ['.ts', '.js', '.graphql'],
+    extensions: ['.ts', '.js'],
   },
   externals: [/^@via-profit-services\/.*/, /^uuid$/, /^graphql$/],
 };

@@ -10,8 +10,6 @@ import {
   DEFAULT_SIGNATURE_ALGORITHM,
   DEFAULT_SIGNATURE_ISSUER,
 } from './constants';
-import resolvers from './resolvers';
-import typeDefs from './schema.graphql';
 
 const factory: MiddlewareFactory = async configuration => {
   const {
@@ -19,7 +17,6 @@ const factory: MiddlewareFactory = async configuration => {
     publicKey,
     algorithm,
     issuer,
-    roles,
     refreshTokenExpiresIn,
     accessTokenExpiresIn,
     createTokenFn,
@@ -42,8 +39,6 @@ const factory: MiddlewareFactory = async configuration => {
   } catch (err) {
     throw new Error('Failed to get private or/and public keys');
   }
-
-  const rolesList = new Set([...roles]);
 
   const middleware: Middleware = async ({ context, requestCounter }) => {
     if (requestCounter === 1) {
@@ -88,13 +83,6 @@ const factory: MiddlewareFactory = async configuration => {
 
   return {
     middleware,
-    resolvers,
-    typeDefs: `
-      ${typeDefs}
-      enum AccountRole {
-        ${[...rolesList].join(',\n')}
-      }
-      `,
   };
 };
 

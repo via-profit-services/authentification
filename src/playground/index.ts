@@ -1,16 +1,16 @@
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { factory, resolvers, typeDefs } from '@via-profit-services/core';
+import { stitchSchemas } from '@graphql-tools/stitch';
+import * as core from '@via-profit-services/core';
 import * as redis from '@via-profit-services/redis';
 import express from 'express';
 import http from 'http';
 import path from 'path';
 import bcryptjs from 'bcryptjs';
 
-import customTypes from './customTypes';
-import customResolvers from './customResolvers';
 import { factory as authFactory } from '../index';
 import graphiql from './graphiql';
 import accounts from './accounts';
+import authSchema from '../schema';
+import customSchema from './customSchema';
 
 (async () => {
   const app = express();
@@ -28,47 +28,48 @@ import accounts from './accounts';
   const authentification = await authFactory({
     privateKey: path.resolve(__dirname, './jwtRS256.key'),
     publicKey: path.resolve(__dirname, './jwtRS256.key.pub'),
-    accessTokenExpiresIn: 60 * 60 * 24,
-    roles: ['viewer', 'enemy', 'administrator'],
+    accessTokenExpiresIn: 60 * 60 * 24, // 1 day
     checkTokenRevokeFn: async ({ tokenPayload, context }) => {
       const { redis } = context;
-      const token = await redis.hget('blacklist', tokenPayload.id);
+      const has = await redis.get(`revoked_${tokenPayload.id}`);
 
-      return token !== null;
+      return has !== null;
     },
     createTokenFn: async ({ context, login, password }) => {
       const { services, redis } = context;
-      const credentials = `${login}.${password}`;
 
       // get account by login
       const account = accounts.find(account => account.login === login);
 
       // return error if account not found or password are invalid
-      if (!account || !bcryptjs.compareSync(credentials, account.password)) {
-        return {
-          __typename: 'TokenRegistrationError',
-          name: 'InvalidCredentials',
-          msg: 'Invalid login or password',
-        };
+      if (!account || !bcryptjs.compareSync(`${login}.${password}`, account.password)) {
+        return 'Invalid login or password';
       }
 
-      const payload = services.authentification.generateTokens({
+      // generate tokens pair
+      const { accessToken, refreshToken } = services.authentification.generateTokens({
         uuid: account.id,
         roles: account.roles,
       });
 
-      // save token in your store
-      await redis.hset(
-        'tokens',
-        payload.accessToken.payload.id,
-        JSON.stringify(payload.accessToken.payload),
+      // In this example, we save the token ID in Redis,
+      // which allows you to specify the time after which
+      // the record will be automatically deleted from store
+      await redis.set(
+        `token_${accessToken.payload.id}`,
+        accessToken.payload.id,
+        'EXAT',
+        accessToken.payload.exp,
+      );
+      await redis.set(
+        `token_${refreshToken.payload.id}`,
+        refreshToken.payload.id,
+        'EXAT',
+        refreshToken.payload.exp,
       );
 
-      return {
-        __typename: 'TokenRegistrationSuccess',
-        query: {},
-        payload,
-      };
+      // return both tokens
+      return { accessToken, refreshToken };
     },
     refreshTokenFn: async ({ tokenPayload, context }) => {
       const { services, redis } = context;
@@ -78,55 +79,57 @@ import accounts from './accounts';
 
       // return error if account not found
       if (!account) {
-        return {
-          __typename: 'TokenRegistrationError',
-          name: 'InvalidCredentials',
-          msg: 'Account not found',
-        };
+        return 'Account not found';
       }
 
-      const payload = services.authentification.generateTokens({
+      // generate tokens pair
+      const { accessToken, refreshToken } = services.authentification.generateTokens({
         uuid: account.id,
         roles: account.roles,
       });
 
-      // save token in your store
-      await redis.hset(
-        'tokens',
-        payload.accessToken.payload.id,
-        JSON.stringify(payload.accessToken.payload),
+      // In this example, we save the token ID in Redis,
+      // which allows you to specify the time after which
+      // the record will be automatically deleted from store
+      await redis.set(`token_${accessToken.payload.id}`, 'access', 'EXAT', accessToken.payload.exp);
+      await redis.set(
+        `token_${refreshToken.payload.id}`,
+        'refresh',
+        'EXAT',
+        refreshToken.payload.exp,
       );
 
-      return {
-        __typename: 'TokenRegistrationSuccess',
-        query: {},
-        payload,
-      };
+      // We can remove the ID of old tokens from your storage
+      await redis.del(`token_${tokenPayload.id}`, `token_${tokenPayload.associated.id}`);
+
+      // You should put the ID of the old tokens in the blacklist
+      // so that authorization for them is no longer possible
+      // `tokenPayload` - is a old access token payload data
+      await redis.set(`revoked_${tokenPayload.id}`, 'access', 'EXAT', tokenPayload.exp);
+      await redis.set(
+        `revoked_${tokenPayload.associated.id}`,
+        'refresh',
+        'EXAT',
+        tokenPayload.associated.exp,
+      );
+
+      // return both tokens
+      return { accessToken, refreshToken };
     },
   });
 
-  const schema = makeExecutableSchema({
-    typeDefs: [
-      typeDefs,
-      customTypes,
-      authentification.typeDefs,
-      `type User {
-        id: ID!
-        name: String!
-      }`,
-    ],
-    resolvers: [resolvers, customResolvers, authentification.resolvers],
-  });
-
   // const enableIntrospection = false;
-  const { graphQLExpress } = await factory({
+
+  const { graphQLExpress } = await core.factory({
     server,
-    schema,
+    schema: stitchSchemas({
+      subschemas: [core.schema, authSchema, customSchema],
+    }),
     debug: true,
     middleware: [redisMiddleware, authentification.middleware],
   });
 
-  app.use('/graphql', graphQLExpress); // <-- Last
+  app.use('/graphql', graphQLExpress);
   app.use(
     '/',
     graphiql({
@@ -196,7 +199,7 @@ fragment AuthSuccessFragment on TokenRegistrationSuccess {
     }),
   ); // <-- Last
 
-  server.listen(9000, () => {
-    console.log(`GraphQL Server started at http://localhost:9000/graphql`);
+  server.listen(8080, () => {
+    console.log(`GraphQL Server started at http://localhost:8080/graphql`);
   });
 })();
