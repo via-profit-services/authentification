@@ -2,12 +2,9 @@ import type {
   AccessTokenPayload,
   TokenPackage,
   RefreshTokenPayload,
-  AuthentificationServiceProps,
+  JwtConfig,
   AuthentificationService as AuthentificationServiceInterface,
-  CreateTokenFn,
-  RefreshTokenFn,
   GenerateTokenPayload,
-  CheckTokenRevokeFn,
 } from '@via-profit-services/authentification';
 import { IncomingMessage } from 'http';
 import jsonwebtoken from 'jsonwebtoken';
@@ -22,28 +19,10 @@ import {
 } from '../constants';
 
 class AuthentificationService implements AuthentificationServiceInterface {
-  props: AuthentificationServiceProps;
+  jwt: JwtConfig;
 
-  public constructor(props: AuthentificationServiceProps) {
-    this.props = props;
-  }
-
-  public async createToken(props: Parameters<CreateTokenFn>[0]) {
-    const { createTokenFn } = this.props;
-
-    return await createTokenFn(props);
-  }
-
-  public async refreshToken(props: Parameters<RefreshTokenFn>[0]) {
-    const { refreshTokenFn } = this.props;
-
-    return await refreshTokenFn(props);
-  }
-
-  public async checkTokenRevokeFn(props: Parameters<CheckTokenRevokeFn>[0]) {
-    const { checkTokenRevokeFn } = this.props;
-
-    return await checkTokenRevokeFn(props);
+  public constructor(jwt: JwtConfig) {
+    this.jwt = jwt;
   }
 
   public getDefaultTokenPayload(): AccessTokenPayload {
@@ -67,10 +46,7 @@ class AuthentificationService implements AuthentificationServiceInterface {
       refresh: number;
     },
   ): TokenPackage {
-    const { context } = this.props;
-    const { accessTokenExpiresIn, refreshTokenExpiresIn, issuer, algorithm, privateKey } =
-      context.jwt;
-
+    const { accessTokenExpiresIn, refreshTokenExpiresIn, issuer, algorithm, privateKey } = this.jwt;
     const accessExpires = exp?.access ?? accessTokenExpiresIn;
     const refreshExpires = exp?.refresh ?? refreshTokenExpiresIn;
 
@@ -135,12 +111,10 @@ class AuthentificationService implements AuthentificationServiceInterface {
   }
 
   public async verifyToken(token: string): Promise<AccessTokenPayload | RefreshTokenPayload> {
-    const { context } = this.props;
-    const { jwt } = context;
-    const { privateKey, algorithm } = jwt;
-
+    const { privateKey, algorithm, verifiedIssuers } = this.jwt;
     const payload = jsonwebtoken.verify(String(token), privateKey, {
       algorithms: [algorithm],
+      issuer: verifiedIssuers,
     }) as AccessTokenPayload | RefreshTokenPayload;
 
     return payload;

@@ -1,15 +1,20 @@
-import { RequestHandler } from 'express';
+import { HTTPListender } from '@via-profit-services/core';
 
-type GraphiQL = (props: { query: string; variables: Record<string, any> }) => RequestHandler;
+type GraphiQL = (props: {
+  endpoint: string;
+  query: string;
+  variables: Record<string, any>;
+}) => HTTPListender;
 
 const graphiql: GraphiQL = props => (_req, res) => {
-  const { query, variables } = props;
-  const endpoint = `/graphql`;
+  const { query, variables, endpoint } = props;
 
+  res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html');
-  res.send(`<!--
+  res.end(`<!--
   *  Copyright (c) 2021 GraphQL Contributors
   *  All rights reserved.
+  *  https://github.com/graphql/graphiql
   *
   *  This source code is licensed under the license found in the
   *  LICENSE file in the root directory of this source tree.
@@ -38,7 +43,7 @@ const graphiql: GraphiQL = props => (_req, res) => {
      <div id="graphiql">Loading...</div>
      <script src="https://unpkg.com/graphiql/graphiql.min.js" type="application/javascript"></script>
      <script>
-       function graphQLFetcher(graphQLParams) {
+       function graphQLFetcher(graphQLParams, opts = {headers: {}}) {
          return fetch(
            '${endpoint}',
            {
@@ -46,6 +51,7 @@ const graphiql: GraphiQL = props => (_req, res) => {
              headers: {
                Accept: 'application/json',
                'Content-Type': 'application/json',
+               ...opts.headers,
              },
              body: JSON.stringify(graphQLParams),
              credentials: 'omit',
@@ -60,6 +66,10 @@ const graphiql: GraphiQL = props => (_req, res) => {
        ReactDOM.render(
          React.createElement(GraphiQL, {
            fetcher: graphQLFetcher,
+           headerEditorEnabled: true,
+           headerEditorActive: true,
+           shouldPersistHeaders: true,
+           docExplorerOpen: true,
            defaultVariableEditorOpen: true,
            query: \`${query}\`,
            variables: \`${JSON.stringify(variables)}\`,

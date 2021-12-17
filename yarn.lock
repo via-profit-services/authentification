@@ -288,6 +288,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/body-parser@npm:^1.19.2":
+  version: 1.19.2
+  resolution: "@types/body-parser@npm:1.19.2"
+  dependencies:
+    "@types/connect": "*"
+    "@types/node": "*"
+  checksum: e17840c7d747a549f00aebe72c89313d09fbc4b632b949b2470c5cb3b1cb73863901ae84d9335b567a79ec5efcfb8a28ff8e3f36bc8748a9686756b6d5681f40
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -651,6 +661,7 @@ __metadata:
   dependencies:
     "@graphql-tools/stitch": ^8.4.2
     "@types/bcryptjs": ^2.4.2
+    "@types/body-parser": ^1.19.2
     "@types/express": ^4.17.9
     "@types/ioredis": ^4.17.8
     "@types/jsonwebtoken": ^8.5.5
@@ -663,10 +674,11 @@ __metadata:
     "@types/webpack-node-externals": ^2.5.0
     "@typescript-eslint/eslint-plugin": ^5.3.0
     "@typescript-eslint/parser": ^5.3.0
-    "@via-profit-services/core": "file://home/dhs/Projects/@via-profit-services/core/package-2.1.1.tgz"
+    "@via-profit-services/core": "file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz"
     "@via-profit-services/eslint-config": ^0.1.18
     "@via-profit-services/redis": ^2.0.0
     bcryptjs: ^2.4.3
+    body-parser: ^1.19.1
     cross-env: ^6.0.3
     eslint: 7.32.0
     eslint-config-prettier: ^8.3.0
@@ -697,29 +709,30 @@ __metadata:
     webpack-merge: ^5.4.0
     webpack-node-externals: ^2.5.2
   peerDependencies:
-    "@via-profit-services/core": ^2.1.x
+    "@via-profit-services/core": ^2.2.x
     graphql: ^15.x || ^16.x
     jsonwebtoken: ^8.x
     uuid: ^8.x
   languageName: unknown
   linkType: soft
 
-"@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.1.1.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A.":
-  version: 2.1.1
-  resolution: "@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.1.1.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A."
+"@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A.":
+  version: 2.2.0-rc.9
+  resolution: "@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A."
   dependencies:
     bufferutil: ^4.x
     raw-body: ^2.x
     utf-8-validate: ^5.x
   peerDependencies:
-    express: ^4.x
+    busboy: ^0.3.x
+    fs-capacitor: ^7.x
     graphql: ^15.x || ^16.x
   dependenciesMeta:
     bufferutil:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 34e8e225973a7b66a14c5e5c888cb405cc76b52d724a1af49d2f64fcc02d42d04bda92361c3c7ec3951734822721cde4cfea48de12ae40aaffd041be33f14248
+  checksum: c32e82fbaebee7ad32325b959633b1a79e9125de27d9173857e260da37e2e8bde87ba41f68ffd9e9071a9b6e82c6879da0897ecfa84b3cae978a613005f960a3
   languageName: node
   linkType: hard
 
@@ -1277,6 +1290,24 @@ __metadata:
     raw-body: 2.4.0
     type-is: ~1.6.17
   checksum: 490231b4c89bbd43112762f7ba8e5342c174a6c9f64284a3b0fcabf63277e332f8316765596f1e5b15e4f3a6cf0422e005f4bb3149ed3a224bb025b7a36b9ac1
+  languageName: node
+  linkType: hard
+
+"body-parser@npm:^1.19.1":
+  version: 1.19.1
+  resolution: "body-parser@npm:1.19.1"
+  dependencies:
+    bytes: 3.1.1
+    content-type: ~1.0.4
+    debug: 2.6.9
+    depd: ~1.1.2
+    http-errors: 1.8.1
+    iconv-lite: 0.4.24
+    on-finished: ~2.3.0
+    qs: 6.9.6
+    raw-body: 2.4.2
+    type-is: ~1.6.18
+  checksum: 9197a300a6580b8723c7b6b1e22cebd5ba47cd4a6fd45c153350efcde79293869ddee8d17d95fb52724812d649d89d62775faab072608d3243a0cbb00582234e
   languageName: node
   linkType: hard
 
@@ -4706,6 +4737,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qs@npm:6.9.6":
+  version: 6.9.6
+  resolution: "qs@npm:6.9.6"
+  checksum: cb6df402bb8a3dbefa4bd46eba0dfca427079baca923e6b8d28a03e6bfb16a5c1dcdb96e69388f9c5813ac8ff17bb8bbca22f2ecd31fe1e344a55cb531b5fabf
+  languageName: node
+  linkType: hard
+
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
@@ -4741,7 +4779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raw-body@npm:^2.x":
+"raw-body@npm:2.4.2, raw-body@npm:^2.x":
   version: 2.4.2
   resolution: "raw-body@npm:2.4.2"
   dependencies:

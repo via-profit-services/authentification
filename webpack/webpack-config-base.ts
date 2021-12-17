@@ -10,14 +10,10 @@ const webpackBaseConfig: Configuration = {
       },
     ],
   },
-  node: {
-    __filename: true,
-    __dirname: true,
-  },
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  externals: [/^@via-profit-services\/.*/, /^uuid$/, /^graphql$/],
+  externals: [/^@via-profit-services\/.*/, 'uuid', 'graphql', 'jsonwebtoken'],
 };
 
 export default webpackBaseConfig;

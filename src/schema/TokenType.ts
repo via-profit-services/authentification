@@ -2,7 +2,6 @@ import { GraphQLEnumType } from 'graphql';
 
 const TokenType = new GraphQLEnumType({
   name: 'TokenType',
-  description: 'Token type',
   values: {
     access: {
       value: 'access',

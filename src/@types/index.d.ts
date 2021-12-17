@@ -2,18 +2,14 @@ declare module '@via-profit-services/authentification' {
   import { Context, Middleware, MaybePromise, MiddlewareProps } from '@via-profit-services/core';
   import { IncomingMessage } from 'http';
   import { Algorithm } from 'jsonwebtoken';
-  import { GraphQLFieldResolver, ValidationRule } from 'graphql';
+  import { ValidationRule } from 'graphql';
 
   export interface Configuration {
-    /**
-     * Cert private key file path or key content
-     */
-    privateKey: string | Buffer;
-    /**
-     * Cert public key file path or key content
-     */
-    publicKey: string | Buffer;
+    readonly jwt: JwtConfig;
+    readonly tokenService: TokenService;
+  }
 
+  export type TokenService = {
     /**
      * This function is triggered every time an authorization attempt is made \
      * You should return tokens pair or error message or false\
@@ -34,7 +30,7 @@ declare module '@via-profit-services/authentification' {
      * });
      * ```
      */
-    createTokenFn: CreateTokenFn;
+    createToken: CreateTokenFn;
 
     /**
      * This function is triggered every time a token refresh is attempted \
@@ -56,55 +52,13 @@ declare module '@via-profit-services/authentification' {
      * });
      * ```
      */
-    refreshTokenFn: RefreshTokenFn;
+    refreshToken: RefreshTokenFn;
 
     /**
      * This function is run at every request to check if the token is in the blacklist
      */
-    checkTokenRevokeFn: CheckTokenRevokeFn;
-
-    /**
-     * Signature algorithm. Could be one of these values :
-     * - HS256:    HMAC using SHA-256 hash algorithm (default)
-     * - HS384:    HMAC using SHA-384 hash algorithm
-     * - HS512:    HMAC using SHA-512 hash algorithm
-     * - RS256:    RSASSA using SHA-256 hash algorithm
-     * - RS384:    RSASSA using SHA-384 hash algorithm
-     * - RS512:    RSASSA using SHA-512 hash algorithm
-     * - ES256:    ECDSA using P-256 curve and SHA-256 hash algorithm
-     * - ES384:    ECDSA using P-384 curve and SHA-384 hash algorithm
-     * - ES512:    ECDSA using P-521 curve and SHA-512 hash algorithm
-     * - none:     No digital signature or MAC value included
-     * \
-     * \
-     * Default: `RS256`
-     */
-    algorithm?: Algorithm;
-
-    /**
-     * A case-sensitive string or URI that is the unique identifier of the token-generating party\
-     * \
-     * Default: `via-profit-service`
-     */
-    issuer?: string;
-
-    /**
-     * Unix time that determines the moment when the Access Token becomes invalid\
-     * (the access token lifetime in seconds)\
-     * \
-     * Default: `1800` (30 minutes)
-     */
-    accessTokenExpiresIn?: number;
-
-    /**
-     * Unix time that determines the moment when the Refresh Token becomes invalid\
-     * (the refresh token lifetime in seconds)\
-     * \
-     * Unit: `seconds`\
-     * Default: `2.592e6` (30 days)
-     */
-    refreshTokenExpiresIn?: number;
-  }
+    checkTokenRevoke: CheckTokenRevokeFn;
+  };
 
   export type CreateTokenFn = (props: {
     login: string;
@@ -123,58 +77,61 @@ declare module '@via-profit-services/authentification' {
   }) => MaybePromise<boolean>;
 
   export interface JwtConfig {
-    algorithm?: Algorithm;
-    issuer?: string;
-    accessTokenExpiresIn?: number;
-    refreshTokenExpiresIn?: number;
-    privateKey: Buffer;
-    publicKey: Buffer;
+    /**
+     * Signature algorithm. Could be one of these values :
+     * - HS256:    HMAC using SHA-256 hash algorithm
+     * - HS384:    HMAC using SHA-384 hash algorithm
+     * - HS512:    HMAC using SHA-512 hash algorithm
+     * - RS256:    RSASSA using SHA-256 hash algorithm
+     * - RS384:    RSASSA using SHA-384 hash algorithm
+     * - RS512:    RSASSA using SHA-512 hash algorithm
+     * - ES256:    ECDSA using P-256 curve and SHA-256 hash algorithm
+     * - ES384:    ECDSA using P-384 curve and SHA-384 hash algorithm
+     * - ES512:    ECDSA using P-521 curve and SHA-512 hash algorithm
+     * - none:     No digital signature or MAC value included
+     */
+    readonly algorithm: Algorithm;
+    /**
+     * Cert private key
+     */
+    readonly privateKey: Buffer;
+    /**
+     * Cert public key
+     */
+    readonly publicKey: Buffer;
+    /**
+     * Unix time that determines the moment when the Access Token becomes invalid\
+     * (the access token lifetime in seconds)\
+     * \
+     * Unit: `seconds`\
+     * Example: `1800` (30 minutes)
+     */
+    readonly accessTokenExpiresIn: number;
+
+    /**
+     * Unix time that determines the moment when the Refresh Token becomes invalid\
+     * (the refresh token lifetime in seconds)\
+     * \
+     * Unit: `seconds`\
+     * Example: `2.592e6` (30 days)
+     */
+    readonly refreshTokenExpiresIn: number;
+
+    /**
+     * A case-sensitive string or URI that is the unique identifier of the token-generating party
+     */
+    readonly issuer?: string;
+
+    /**
+     * An array of case-sensitive string or URI \
+     * that is the unique identifier of the token-generating party
+     */
+    readonly verifiedIssuers?: string[];
   }
 
   export type MiddlewareFactory = (config: Configuration) => Promise<{
     middleware: Middleware;
   }>;
-
-  export type Resolvers = {
-    Query: {
-      authentification: GraphQLFieldResolver<unknown, Context>;
-    };
-    Mutation: {
-      authentification: GraphQLFieldResolver<unknown, Context>;
-    };
-    AuthentificationMutation: {
-      create: GraphQLFieldResolver<
-        unknown,
-        Context,
-        {
-          login: string;
-          password: string;
-        }
-      >;
-      refresh: GraphQLFieldResolver<
-        unknown,
-        Context,
-        {
-          refreshToken: string;
-        }
-      >;
-    };
-    AuthentificationQuery: {
-      tokenPayload: GraphQLFieldResolver<unknown, Context>;
-      verifyToken: GraphQLFieldResolver<
-        unknown,
-        Context,
-        {
-          token: string;
-        }
-      >;
-    };
-  };
-
-  export type TokenBagResolver = Record<
-    keyof TokenPackage,
-    GraphQLFieldResolver<TokenPackage, Context>
-  >;
 
   export type TokenRegistrationResponseSuccess = {
     __typename: 'TokenRegistrationSuccess';
@@ -289,24 +246,9 @@ declare module '@via-profit-services/authentification' {
     roles: string[];
   }
 
-  /**
-   * Authentification service constructor props
-   */
-  export interface AuthentificationServiceProps {
-    context: Context;
-    createTokenFn: CreateTokenFn;
-    refreshTokenFn: RefreshTokenFn;
-    checkTokenRevokeFn: CheckTokenRevokeFn;
-  }
-
-  class AuthentificationService {
-    props: AuthentificationServiceProps;
-    constructor(props: AuthentificationServiceProps);
-    createToken(props: Parameters<CreateTokenFn>[0]): MaybePromise<ReturnType<CreateTokenFn>>;
-    refreshToken(props: Parameters<RefreshTokenFn>[0]): MaybePromise<ReturnType<RefreshTokenFn>>;
-    checkTokenRevokeFn(
-      props: Parameters<CheckTokenRevokeFn>[0],
-    ): MaybePromise<ReturnType<CheckTokenRevokeFn>>;
+  export class AuthentificationService {
+    jwt: JwtConfig;
+    constructor(jwt: JwtConfig);
     /**
      * Generate token pair (access + refresh)
      */

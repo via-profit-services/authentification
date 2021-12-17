@@ -31,10 +31,10 @@ const AuthentificationMutation = new GraphQLObjectType<unknown, Context>({
       resolve: async (_parent, args: CreateTokenArgs, context) => {
         const { login, password } = args;
         const { services } = context;
-        const { authentification } = services;
+        const { tokenService } = services;
 
         // try to generate token pairs (call user function)
-        const result = await authentification.createToken({
+        const result = await tokenService.createToken({
           context,
           login,
           password,
@@ -73,7 +73,7 @@ const AuthentificationMutation = new GraphQLObjectType<unknown, Context>({
       resolve: async (_parent, args: RefreshTokenArgs, context) => {
         const { refreshToken } = args;
         const { services } = context;
-        const { authentification } = services;
+        const { authentification, tokenService } = services;
 
         let tokenPayload: RefreshTokenPayload | AccessTokenPayload;
         try {
@@ -94,7 +94,7 @@ const AuthentificationMutation = new GraphQLObjectType<unknown, Context>({
         }
 
         // if token was revoked
-        const isRevoked = await authentification.checkTokenRevokeFn({ context, tokenPayload });
+        const isRevoked = await tokenService.checkTokenRevoke({ context, tokenPayload });
         if (isRevoked) {
           const response: TokenRegistrationResponseFailure = {
             name: 'TokenVerificationError',
@@ -106,7 +106,7 @@ const AuthentificationMutation = new GraphQLObjectType<unknown, Context>({
         }
 
         // try to generate token pairs (call user function)
-        const result = await authentification.refreshToken({
+        const result = await tokenService.refreshToken({
           context,
           tokenPayload,
         });

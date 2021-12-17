@@ -3,6 +3,7 @@ declare module '@via-profit-services/core' {
     JwtConfig,
     AccessTokenPayload,
     AuthentificationService,
+    TokenService,
   } from '@via-profit-services/authentification';
 
   interface Context {
@@ -22,5 +23,9 @@ declare module '@via-profit-services/core' {
      * Authentification service
      */
     authentification: AuthentificationService;
+    /**
+     * Authentification service
+     */
+    tokenService: TokenService;
   }
 }

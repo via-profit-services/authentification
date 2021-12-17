@@ -26,7 +26,7 @@ const AuthentificationQuery = new GraphQLObjectType<unknown, Context>({
       resolve: async (_parent, args: VerifyTokenArgs, context) => {
         const { accessToken } = args;
         const { services } = context;
-        const { authentification } = services;
+        const { authentification, tokenService } = services;
 
         let tokenPayload: AccessTokenPayload | RefreshTokenPayload;
 
@@ -41,7 +41,7 @@ const AuthentificationQuery = new GraphQLObjectType<unknown, Context>({
         }
 
         try {
-          const isRevoked = await authentification.checkTokenRevokeFn({
+          const isRevoked = await tokenService.checkTokenRevoke({
             context,
             tokenPayload,
           });

@@ -20,7 +20,7 @@ const RefreshTokenPayload = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(GraphQLID) },
     uuid: { type: new GraphQLNonNull(GraphQLID) },
     exp: { type: new GraphQLNonNull(GraphQLInt) },
-    iss: { type: new GraphQLNonNull(GraphQLString) },
+    iss: { type: GraphQLString },
     roles: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
   }),
 });
