@@ -63,50 +63,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/batch-delegate@npm:8.2.2":
-  version: 8.2.2
-  resolution: "@graphql-tools/batch-delegate@npm:8.2.2"
-  dependencies:
-    "@graphql-tools/delegate": ^8.4.1
-    "@graphql-tools/utils": ^8.5.1
-    dataloader: 2.0.0
-    tslib: ~2.3.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 018ef0079f63ce7458d9f0d96ddb53600a8ed5941ac78a0e28284edeac2d0d58aa12130e1f949aa17a99b0f043f1acd21692d57bbbd3e804f6bb8cd9a8105840
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/batch-execute@npm:^8.3.1":
-  version: 8.3.1
-  resolution: "@graphql-tools/batch-execute@npm:8.3.1"
-  dependencies:
-    "@graphql-tools/utils": ^8.5.1
-    dataloader: 2.0.0
-    tslib: ~2.3.0
-    value-or-promise: 1.0.11
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: b78e0fcbd21be93b8fe2b2d641e854efcce8b6cad24228749220b41b232b876deb5d669b6d1559c58c13db22b329866a752204048e84e636d58fea7de5591f39
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/delegate@npm:^8.4.1, @graphql-tools/delegate@npm:^8.4.2":
-  version: 8.4.2
-  resolution: "@graphql-tools/delegate@npm:8.4.2"
-  dependencies:
-    "@graphql-tools/batch-execute": ^8.3.1
-    "@graphql-tools/schema": ^8.3.1
-    "@graphql-tools/utils": ^8.5.3
-    dataloader: 2.0.0
-    tslib: ~2.3.0
-    value-or-promise: 1.0.11
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: df9dc91d678d277b8bfa69566e3850fa97755433312c9ea5751e9405f66ac81031f34c699d59b8b17eb688fe38f59bab34e8b2ccd107366b1c20dc5e0d66543f
-  languageName: node
-  linkType: hard
-
 "@graphql-tools/merge@npm:^8.2.1":
   version: 8.2.1
   resolution: "@graphql-tools/merge@npm:8.2.1"
@@ -133,46 +89,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/stitch@npm:^8.4.2":
-  version: 8.4.2
-  resolution: "@graphql-tools/stitch@npm:8.4.2"
-  dependencies:
-    "@graphql-tools/batch-delegate": 8.2.2
-    "@graphql-tools/delegate": ^8.4.1
-    "@graphql-tools/merge": ^8.2.1
-    "@graphql-tools/schema": ^8.3.1
-    "@graphql-tools/utils": ^8.5.1
-    "@graphql-tools/wrap": ^8.3.1
-    tslib: ~2.3.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: c9f6d2acf4db535dad21ee8be6256595fd78b2978b8f4ab2dcba448966d15bc0553a35e2325bae66c229db0b4d9042abb4dd22874349852a757a39f51209c4be
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/utils@npm:^8.5.1, @graphql-tools/utils@npm:^8.5.3":
-  version: 8.5.3
-  resolution: "@graphql-tools/utils@npm:8.5.3"
+"@graphql-tools/utils@npm:^8.5.1":
+  version: 8.5.5
+  resolution: "@graphql-tools/utils@npm:8.5.5"
   dependencies:
     tslib: ~2.3.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: f5f8e82c46f205c0d48c2d6d160e28183706a86755e7ea31db6e54b32da7db9eecf988d0935538e27cc3706b5031b75798dc85532e11724fdb4578a9a1b00450
-  languageName: node
-  linkType: hard
-
-"@graphql-tools/wrap@npm:^8.3.1":
-  version: 8.3.2
-  resolution: "@graphql-tools/wrap@npm:8.3.2"
-  dependencies:
-    "@graphql-tools/delegate": ^8.4.2
-    "@graphql-tools/schema": ^8.3.1
-    "@graphql-tools/utils": ^8.5.3
-    tslib: ~2.3.0
-    value-or-promise: 1.0.11
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 83671763a46a23b05fcf27c5f2fb5ac002ae1b7465e5e4488682c5ec120167977839faaad9d93de2680b6d88b56cbdc07c7e45f325845f0c4c1b47933ac960d1
+  checksum: e23c78ba268d1e56546b96c7bd0e4df36cbeac4941c6e1547d6e59f0b8d5312e937f788efd03a5ab21701ac348d2f567cb92acac27171ddf77c57de483fa5902
   languageName: node
   linkType: hard
 
@@ -659,7 +583,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@via-profit-services/authentification@workspace:."
   dependencies:
-    "@graphql-tools/stitch": ^8.4.2
+    "@graphql-tools/schema": ^8.3.1
     "@types/bcryptjs": ^2.4.2
     "@types/body-parser": ^1.19.2
     "@types/express": ^4.17.9
@@ -711,7 +635,7 @@ __metadata:
     webpack-node-externals: ^2.5.2
   peerDependencies:
     "@via-profit-services/core": ^2.2.x
-    graphql: ^15.x || ^16.x
+    graphql: ^16.x
     jsonwebtoken: ^8.x
     uuid: ^8.x
   languageName: unknown
@@ -1767,13 +1691,6 @@ __metadata:
   version: 2.0.0
   resolution: "crypto-random-string@npm:2.0.0"
   checksum: 0283879f55e7c16fdceacc181f87a0a65c53bc16ffe1d58b9d19a6277adcd71900d02bb2c4843dd55e78c51e30e89b0fec618a7f170ebcc95b33182c28f05fd6
-  languageName: node
-  linkType: hard
-
-"dataloader@npm:2.0.0":
-  version: 2.0.0
-  resolution: "dataloader@npm:2.0.0"
-  checksum: 9f10b9d2e35225b08a72435facfe40c0c124e329f43bd0fe4d67411ee667d12145f7ce63f9b74f73af8556dc6a98bae59147a5cca2171315dc1de509d4db04c0
   languageName: node
   linkType: hard
 

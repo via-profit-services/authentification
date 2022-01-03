@@ -35,9 +35,7 @@ const factory: MiddlewareFactory = async configuration => {
     }
   };
 
-  return {
-    middleware,
-  };
+  return middleware;
 };
 
 export default factory;

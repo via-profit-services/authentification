@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable import/max-dependencies */
-import { stitchSchemas } from '@graphql-tools/stitch';
+import { mergeSchemas } from '@graphql-tools/schema';
 import { graphqlExpressFactory, ErrorInterfaceType } from '@via-profit-services/core';
 import type { JwtConfig } from '@via-profit-services/authentification';
 import * as redis from '@via-profit-services/redis';
@@ -45,12 +45,11 @@ import tokenService from './token-service';
   const authService = new AuthentificationService(jwt);
   const redisMiddleware = redis.factory(redisConfig);
   const graphqlExpress = await graphqlExpressFactory({
-    schema: stitchSchemas({
-      subschemas: [authSchema, customSchema],
-      types: [ErrorInterfaceType],
+    schema: mergeSchemas({
+      schemas: [authSchema, customSchema],
     }),
     debug: true,
-    middleware: [redisMiddleware, authentification.middleware],
+    middleware: [redisMiddleware, authentification],
   });
 
   app.use('/graphql', graphqlExpress);

@@ -7,7 +7,7 @@ const tokenService: TokenService = {
   checkTokenRevoke: async props => {
     const { tokenPayload, context } = props;
     const { redis } = context;
-    const has = await redis.get(`revoked_${tokenPayload.id}`);
+    const has = await redis.get(`revoked:${tokenPayload.id}`);
 
     return has !== null;
   },
@@ -33,14 +33,14 @@ const tokenService: TokenService = {
     // which allows you to specify the time after which
     // the record will be automatically deleted from store
     await redis.set(
-      `token_${accessToken.payload.id}`,
-      accessToken.payload.id,
+      `tokens:${accessToken.payload.id}`,
+      JSON.stringify(accessToken.payload),
       'EXAT',
       accessToken.payload.exp,
     );
     await redis.set(
-      `token_${refreshToken.payload.id}`,
-      refreshToken.payload.id,
+      `tokens:${refreshToken.payload.id}`,
+      JSON.stringify(refreshToken.payload),
       'EXAT',
       refreshToken.payload.exp,
     );
@@ -69,23 +69,28 @@ const tokenService: TokenService = {
     // In this example, we save the token ID in Redis,
     // which allows you to specify the time after which
     // the record will be automatically deleted from store
-    await redis.set(`token_${accessToken.payload.id}`, 'access', 'EXAT', accessToken.payload.exp);
     await redis.set(
-      `token_${refreshToken.payload.id}`,
-      'refresh',
+      `tokens:${accessToken.payload.id}`,
+      JSON.stringify(accessToken.payload),
+      'EXAT',
+      accessToken.payload.exp,
+    );
+    await redis.set(
+      `tokens:${refreshToken.payload.id}`,
+      JSON.stringify(refreshToken.payload),
       'EXAT',
       refreshToken.payload.exp,
     );
 
     // We can remove the ID of old tokens from your storage
-    await redis.del(`token_${tokenPayload.id}`, `token_${tokenPayload.associated.id}`);
+    await redis.del(`tokens:${tokenPayload.id}`, `tokens:${tokenPayload.associated.id}`);
 
     // You should put the ID of the old tokens in the blacklist
     // so that authorization for them is no longer possible
     // `tokenPayload` - is a old access token payload data
-    await redis.set(`revoked_${tokenPayload.id}`, 'access', 'EXAT', tokenPayload.exp);
+    await redis.set(`revoked:${tokenPayload.id}`, 'access', 'EXAT', tokenPayload.exp);
     await redis.set(
-      `revoked_${tokenPayload.associated.id}`,
+      `revoked:${tokenPayload.associated.id}`,
       'refresh',
       'EXAT',
       tokenPayload.associated.exp,

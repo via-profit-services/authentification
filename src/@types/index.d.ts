@@ -2,7 +2,13 @@ declare module '@via-profit-services/authentification' {
   import { Context, Middleware, MaybePromise, MiddlewareProps } from '@via-profit-services/core';
   import { IncomingMessage } from 'http';
   import { Algorithm } from 'jsonwebtoken';
-  import { ValidationRule } from 'graphql';
+  import {
+    GraphQLEnumType,
+    GraphQLObjectType,
+    GraphQLSchema,
+    GraphQLUnionType,
+    ValidationRule,
+  } from 'graphql';
 
   export interface Configuration {
     readonly jwt: JwtConfig;
@@ -129,9 +135,7 @@ declare module '@via-profit-services/authentification' {
     readonly verifiedIssuers?: string[];
   }
 
-  export type MiddlewareFactory = (config: Configuration) => Promise<{
-    middleware: Middleware;
-  }>;
+  export type MiddlewareFactory = (config: Configuration) => Promise<Middleware>;
 
   export type TokenRegistrationResponseSuccess = {
     __typename: 'TokenRegistrationSuccess';
@@ -270,5 +274,55 @@ declare module '@via-profit-services/authentification' {
     ): payload is RefreshTokenPayload;
   }
 
+  export type IsEmptyToken = (tokenPayload: AccessTokenPayload) => boolean;
+
   export const factory: MiddlewareFactory;
+  export const schema: GraphQLSchema;
+  export const AuthentificationQueryType: GraphQLObjectType;
+  export const AuthentificationMutationType: GraphQLObjectType;
+  export const TokenTypeType: GraphQLEnumType;
+  export const TokenBagType: GraphQLObjectType;
+  export const AccessTokenType: GraphQLObjectType;
+  export const RefreshTokenType: GraphQLObjectType;
+  export const AccessTokenPayloadType: GraphQLObjectType;
+  export const RefreshTokenPayloadType: GraphQLObjectType;
+  export const TokenRegistrationResponseType: GraphQLUnionType;
+  export const TokenRegistrationSuccessType: GraphQLObjectType;
+  export const TokenRegistrationErrorType: GraphQLObjectType;
+  export const TokenVerificationResponseType: GraphQLUnionType;
+  export const TokenVerificationSuccessType: GraphQLObjectType;
+  export const TokenVerificationErrorType: GraphQLObjectType;
+  export const isEmptyToken: IsEmptyToken;
+}
+
+declare module '@via-profit-services/core' {
+  import {
+    JwtConfig,
+    AccessTokenPayload,
+    AuthentificationService,
+    TokenService,
+  } from '@via-profit-services/authentification';
+
+  interface Context {
+    /**
+     * JWT configuration.
+     * @see [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+     */
+    jwt: JwtConfig;
+    /**
+     * Access token payload
+     */
+    token: AccessTokenPayload;
+  }
+
+  interface ServicesCollection {
+    /**
+     * Authentification service
+     */
+    authentification: AuthentificationService;
+    /**
+     * Authentification service
+     */
+    tokenService: TokenService;
+  }
 }
