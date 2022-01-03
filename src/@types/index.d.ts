@@ -269,4 +269,6 @@ declare module '@via-profit-services/authentification' {
       payload: AccessTokenPayload | RefreshTokenPayload,
     ): payload is RefreshTokenPayload;
   }
+
+  export const factory: MiddlewareFactory;
 }
