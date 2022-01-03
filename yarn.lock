@@ -674,11 +674,12 @@ __metadata:
     "@types/webpack-node-externals": ^2.5.0
     "@typescript-eslint/eslint-plugin": ^5.3.0
     "@typescript-eslint/parser": ^5.3.0
-    "@via-profit-services/core": "file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz"
+    "@via-profit-services/core": ^2.2.0-rc.18
     "@via-profit-services/eslint-config": ^0.1.18
     "@via-profit-services/redis": ^2.0.0
     bcryptjs: ^2.4.3
     body-parser: ^1.19.1
+    busboy: 0.3.1
     cross-env: ^6.0.3
     eslint: 7.32.0
     eslint-config-prettier: ^8.3.0
@@ -716,23 +717,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A.":
-  version: 2.2.0-rc.9
-  resolution: "@via-profit-services/core@file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz::locator=%40via-profit-services%2Fauthentification%40workspace%3A."
+"@via-profit-services/core@npm:^2.2.0-rc.18":
+  version: 2.2.0-rc.18
+  resolution: "@via-profit-services/core@npm:2.2.0-rc.18"
   dependencies:
     bufferutil: ^4.x
     raw-body: ^2.x
     utf-8-validate: ^5.x
   peerDependencies:
-    busboy: ^0.3.x
-    fs-capacitor: ^7.x
-    graphql: ^15.x || ^16.x
+    busboy: ^0.3.1
+    graphql: ^16.x
   dependenciesMeta:
     bufferutil:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: c32e82fbaebee7ad32325b959633b1a79e9125de27d9173857e260da37e2e8bde87ba41f68ffd9e9071a9b6e82c6879da0897ecfa84b3cae978a613005f960a3
+  checksum: 6857c72036daf256505a08720999dbae109169771f985ce11e0975380132927016ad5e3e879ae71145a98b729ef87550e10d2a463d95cca491b0efa92b7730c7
   languageName: node
   linkType: hard
 
@@ -1401,6 +1401,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"busboy@npm:0.3.1":
+  version: 0.3.1
+  resolution: "busboy@npm:0.3.1"
+  dependencies:
+    dicer: 0.3.0
+  checksum: d2bcb788c4595edca4ea2168ab8bf7f9558b627ddcec2fb6bbaf0aa6a10b63da48dce35ce56936570f330c5268a3204f7037021a310a895a8b1a223568e0cc1b
+  languageName: node
+  linkType: hard
+
 "bytes@npm:3.1.0":
   version: 3.1.0
   resolution: "bytes@npm:3.1.0"
@@ -1862,6 +1871,15 @@ __metadata:
   version: 1.0.4
   resolution: "destroy@npm:1.0.4"
   checksum: da9ab4961dc61677c709da0c25ef01733042614453924d65636a7db37308fef8a24cd1e07172e61173d471ca175371295fbc984b0af5b2b4ff47cd57bd784c03
+  languageName: node
+  linkType: hard
+
+"dicer@npm:0.3.0":
+  version: 0.3.0
+  resolution: "dicer@npm:0.3.0"
+  dependencies:
+    streamsearch: 0.1.2
+  checksum: 9f61aea61fcd81457f1b43967af7e66415b7a31d393336fa05a29b221b5ba065b99e5cac46476b2da36eb7af7665bf8dad6f9500409116dc6a35ada183841598
   languageName: node
   linkType: hard
 
@@ -5300,6 +5318,13 @@ __metadata:
   version: 1.5.0
   resolution: "statuses@npm:1.5.0"
   checksum: c469b9519de16a4bb19600205cffb39ee471a5f17b82589757ca7bd40a8d92ebb6ed9f98b5a540c5d302ccbc78f15dc03cc0280dd6e00df1335568a5d5758a5c
+  languageName: node
+  linkType: hard
+
+"streamsearch@npm:0.1.2":
+  version: 0.1.2
+  resolution: "streamsearch@npm:0.1.2"
+  checksum: d2db57cbfbf7947ab9c75a7b4c80a8ef8d24850cf0a1a24258bb6956c97317ce1eab7dbcbf9c5aba3e6198611af1053b02411057bbedb99bf9c64b8275248997
   languageName: node
   linkType: hard
 

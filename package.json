@@ -1,7 +1,7 @@
 {
   "name": "@via-profit-services/authentification",
   "support": "https://via-profit.ru",
-  "version": "2.0.0-rc.5",
+  "version": "2.0.0-rc.6",
   "description": "Authentification Schema",
   "main": "dist/index.js",
   "engines": {
@@ -52,11 +52,12 @@
     "@types/webpack-node-externals": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
-    "@via-profit-services/core": "file://home/dhs/Projects/@via-profit-services/core/package-2.2.0-rc.9.tgz",
+    "@via-profit-services/core": "^2.2.0-rc.18",
     "@via-profit-services/eslint-config": "^0.1.18",
     "@via-profit-services/redis": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
+    "busboy": "0.3.1",
     "cross-env": "^6.0.3",
     "eslint": "7.32.0",
     "eslint-config-prettier": "^8.3.0",
@@ -89,7 +90,7 @@
   },
   "peerDependencies": {
     "@via-profit-services/core": "^2.2.x",
-    "graphql": "^15.x || ^16.x",
+    "graphql": "^16.x",
     "jsonwebtoken": "^8.x",
     "uuid": "^8.x"
   },

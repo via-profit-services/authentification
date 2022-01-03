@@ -13,15 +13,15 @@ const AccessTokenPayload = new GraphQLObjectType({
   name: 'AccessTokenPayload',
   description: 'Access token payload',
   fields: () => ({
-    type: {
-      type: new GraphQLNonNull(TokenType),
-      resolve: () => 'access',
-    },
     id: { type: new GraphQLNonNull(GraphQLID) },
     uuid: { type: new GraphQLNonNull(GraphQLID) },
     exp: { type: new GraphQLNonNull(GraphQLInt) },
     iss: { type: GraphQLString },
     roles: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
+    type: {
+      type: new GraphQLNonNull(TokenType),
+      resolve: () => 'access',
+    },
   }),
 });
 
