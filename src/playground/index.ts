@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/max-dependencies */
 import { mergeSchemas } from '@graphql-tools/schema';
-import { graphqlExpressFactory, ErrorInterfaceType } from '@via-profit-services/core';
+import { graphqlExpressFactory } from '@via-profit-services/core';
 import type { JwtConfig } from '@via-profit-services/authentification';
 import * as redis from '@via-profit-services/redis';
 import express from 'express';
@@ -31,13 +31,13 @@ import tokenService from './token-service';
     algorithm: 'HS256',
     issuer: 'company-iss',
     verifiedIssuers: ['company-iss', 'third-party-iss'],
-    privateKey: fs.readFileSync(path.resolve(__dirname, './jwtRS256.key')),
-    publicKey: fs.readFileSync(path.resolve(__dirname, './jwtRS256.key.pub')),
+    privateKey: fs.readFileSync(path.resolve(__dirname, '../src/playground/jwtRS256.key')),
+    publicKey: fs.readFileSync(path.resolve(__dirname, '../src/playground/jwtRS256.key.pub')),
     accessTokenExpiresIn: 60 * 60 * 24, // 1 day
     refreshTokenExpiresIn: 2.592e6, // 30 days
   };
 
-  const authentification = await authFactory({
+  const authentification = authFactory({
     tokenService,
     jwt,
   });

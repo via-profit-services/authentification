@@ -3,7 +3,7 @@ import { Middleware } from '@via-profit-services/core';
 
 import AuthentificationService from './services/AuthentificationService';
 
-const factory: MiddlewareFactory = async configuration => {
+const factory: MiddlewareFactory = configuration => {
   const { jwt, tokenService } = configuration;
 
   const middleware: Middleware = async ({ context }) => {

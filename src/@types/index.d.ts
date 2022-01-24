@@ -135,7 +135,7 @@ declare module '@via-profit-services/authentification' {
     readonly verifiedIssuers?: string[];
   }
 
-  export type MiddlewareFactory = (config: Configuration) => Promise<Middleware>;
+  export type MiddlewareFactory = (config: Configuration) => Middleware;
 
   export type TokenRegistrationResponseSuccess = {
     __typename: 'TokenRegistrationSuccess';
